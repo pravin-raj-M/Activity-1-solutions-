@@ -1,0 +1,110 @@
+# 1. Longest Palindromic Substring
+def longestPalindrome(s):
+    result = ""
+    for i in range(len(s)):
+        # Odd length palindromes
+        left, right = i, i
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            if right - left + 1 > len(result):
+                result = s[left:right+1]
+            left -= 1
+            right += 1
+        # Even length palindromes
+        left, right = i, i + 1
+        while left >= 0 and right < len(s) and s[left] == s[right]:
+            if right - left + 1 > len(result):
+                result = s[left:right+1]
+            left -= 1
+            right += 1
+    return result
+
+
+# 2. Implement Trie
+class Trie:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+    def insert(self, word):
+        node = self
+        for char in word:
+            if char not in node.children:
+                node.children[char] = Trie()
+            node = node.children[char]
+        node.is_end = True
+
+    def search(self, word):
+        node = self
+        for char in word:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return node.is_end
+
+    def startsWith(self, prefix):
+        node = self
+        for char in prefix:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return True
+
+
+# 3. Subarray Sum Equals K
+def subarraySum(nums, k):
+    count = 0
+    prefix_sum = 0
+    seen = {0: 1}
+    for num in nums:
+        prefix_sum += num
+        count += seen.get(prefix_sum - k, 0)
+        seen[prefix_sum] = seen.get(prefix_sum, 0) + 1
+    return count
+
+
+# 4. Search in Rotated Sorted Array
+def search(nums, target):
+    left, right = 0, len(nums) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[left] <= nums[mid]:  # Left half is sorted
+            if nums[left] <= target < nums[mid]:
+                right = mid - 1
+            else:
+                left = mid + 1
+        else:  # Right half is sorted
+            if nums[mid] < target <= nums[right]:
+                left = mid + 1
+            else:
+                right = mid - 1
+    return -1
+
+
+# 5. Minimum Window Substring
+def minWindow(s, t):
+    if not t or not s:
+        return ""
+    need = {}
+    for c in t:
+        need[c] = need.get(c, 0) + 1
+    have, total = 0, len(need)
+    window = {}
+    result = ""
+    min_len = float("inf")
+    left = 0
+    for right in range(len(s)):
+        c = s[right]
+        window[c] = window.get(c, 0) + 1
+        if c in need and window[c] == need[c]:
+            have += 1
+        while have == total:
+            if right - left + 1 < min_len:
+                min_len = right - left + 1
+                result = s[left:right+1]
+            window[s[left]] -= 1
+            if s[left] in need and window[s[left]] < need[s[left]]:
+                have -= 1
+            left += 1
+    return result
