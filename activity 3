@@ -1,0 +1,99 @@
+# 1. Sort an Array (Merge Sort - O(n log n))
+def sortArray(nums):
+    if len(nums) <= 1:
+        return nums
+    mid = len(nums) // 2
+    left = sortArray(nums[:mid])
+    right = sortArray(nums[mid:])
+    return merge(left, right)
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+
+# 2. Top K Frequent Elements
+def topKFrequent(nums, k):
+    freq = {}
+    for num in nums:
+        freq[num] = freq.get(num, 0) + 1
+    buckets = [[] for _ in range(len(nums) + 1)]
+    for num, count in freq.items():
+        buckets[count].append(num)
+    result = []
+    for i in range(len(buckets) - 1, 0, -1):
+        for num in buckets[i]:
+            result.append(num)
+            if len(result) == k:
+                return result
+
+
+# 3. Find Median from Data Stream
+import heapq
+
+class MedianFinder:
+    def __init__(self):
+        self.small = []  # max heap (inverted)
+        self.large = []  # min heap
+
+    def addNum(self, num):
+        heapq.heappush(self.small, -num)
+        if self.small and self.large and (-self.small[0] > self.large[0]):
+            heapq.heappush(self.large, -heapq.heappop(self.small))
+        if len(self.small) > len(self.large) + 1:
+            heapq.heappush(self.large, -heapq.heappop(self.small))
+        if len(self.large) > len(self.small):
+            heapq.heappush(self.small, -heapq.heappop(self.large))
+
+    def findMedian(self):
+        if len(self.small) > len(self.large):
+            return -self.small[0]
+        return (-self.small[0] + self.large[0]) / 2
+
+
+# 4. Course Schedule
+def canFinish(numCourses, prerequisites):
+    graph = [[] for _ in range(numCourses)]
+    for a, b in prerequisites:
+        graph[a].append(b)
+    # 0 = unvisited, 1 = visiting, 2 = visited
+    state = [0] * numCourses
+
+    def dfs(node):
+        if state[node] == 1:
+            return False  # cycle found
+        if state[node] == 2:
+            return True
+        state[node] = 1
+        for neighbor in graph[node]:
+            if not dfs(neighbor):
+                return False
+        state[node] = 2
+        return True
+
+    for i in range(numCourses):
+        if not dfs(i):
+            return False
+    return True
+
+
+# 5. Merge Intervals
+def merge_intervals(intervals):
+    intervals.sort(key=lambda x: x[0])
+    result = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= result[-1][1]:
+            result[-1][1] = max(result[-1][1], end)
+        else:
+            result.append([start, end])
+    return result
