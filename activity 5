@@ -1,0 +1,69 @@
+# 1. Subsets
+def subsets(nums):
+    result = []
+    def backtrack(start, current):
+        result.append(current[:])
+        for i in range(start, len(nums)):
+            current.append(nums[i])
+            backtrack(i + 1, current)
+            current.pop()
+    backtrack(0, [])
+    return result
+
+
+# 2. Permutations
+def permute(nums):
+    result = []
+    def backtrack(current):
+        if len(current) == len(nums):
+            result.append(current[:])
+            return
+        for num in nums:
+            if num not in current:
+                current.append(num)
+                backtrack(current)
+                current.pop()
+    backtrack([])
+    return result
+
+
+# 3. Combination Sum
+def combinationSum(candidates, target):
+    result = []
+    def backtrack(start, current, remaining):
+        if remaining == 0:
+            result.append(current[:])
+            return
+        if remaining < 0:
+            return
+        for i in range(start, len(candidates)):
+            current.append(candidates[i])
+            backtrack(i, current, remaining - candidates[i])
+            current.pop()
+    backtrack(0, [], target)
+    return result
+
+
+# 4. N-Queens
+def solveNQueens(n):
+    result = []
+    cols = set()
+    diag1 = set()  # row - col
+    diag2 = set()  # row + col
+
+    def backtrack(row, board):
+        if row == n:
+            result.append(["".join(r) for r in board])
+            return
+        for col in range(n):
+            if col in cols or (row - col) in diag1 or (row + col) in diag2:
+                continue
+            cols.add(col)
+            diag1.add(row - col)
+            diag2.add(row + col)
+            board[row][col] = 'Q'
+            backtrack(row + 1, board)
+            board[row][col] = '.'
+            cols.remove(col)
+            diag1.remove(row - col)
+            diag2.remove(row + co
