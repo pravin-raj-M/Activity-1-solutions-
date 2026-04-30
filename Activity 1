@@ -1,0 +1,57 @@
+# 1. Two Sum
+def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+
+# 2. Longest Substring Without Repeating Characters
+def lengthOfLongestSubstring(s):
+    char_set = set()
+    left = 0
+    max_len = 0
+    for right in range(len(s)):
+        while s[right] in char_set:
+            char_set.remove(s[left])
+            left += 1
+        char_set.add(s[right])
+        max_len = max(max_len, right - left + 1)
+    return max_len
+
+# 3. Product of Array Except Self
+def productExceptSelf(nums):
+    n = len(nums)
+    answer = [1] * n
+    prefix = 1
+    for i in range(n):
+        answer[i] = prefix
+        prefix *= nums[i]
+    suffix = 1
+    for i in range(n - 1, -1, -1):
+        answer[i] *= suffix
+        suffix *= nums[i]
+    return answer
+
+# 4. Maximum Subarray
+def maxSubArray(nums):
+    max_sum = nums[0]
+    current_sum = nums[0]
+    for num in nums[1:]:
+        current_sum = max(num, current_sum + num)
+        max_sum = max(max_sum, current_sum)
+    return max_sum
+
+# 5. Binary Search
+def search(nums, target):
+    left, right = 0, len(nums) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if nums[mid] == target:
+            return mid
+        elif nums[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
